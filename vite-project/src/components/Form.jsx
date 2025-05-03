@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState , useEffect } from "react";
 
 function Form() {
 
@@ -9,6 +9,19 @@ function Form() {
         phone:'',
         studentId:''
     });
+    const [error , seterror] = useState('');
+    const [add , setadd] = useState('');
+
+
+    useEffect(() => {
+        if(add || error ) {
+            const timer = setTimeout(() => {
+                setadd('');
+                seterror('');
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    } , [add , error])
 
     const handlechange = (e) => {
         setformdata({
@@ -28,13 +41,15 @@ function Form() {
         }
     
         try {
-            const res = await axios.post(`${BaseUrl}/students`, formdata);
+            const res = await axios.post(`${BaseUrl}students`, formdata);
             console.log('Server Response:', res.data);
-            alert('Form submitted successfully!');
+            setadd("Student added successfully!");
+            seterror('');
             setformdata({ name: '', email: '', phone: '', studentId: '' }); // reset form
         } catch (error) {
             console.error('Error submitting form:', error.response?.data || error.message);
-            alert('Failed to submit form.');
+            seterror("Something went wrong!");
+            setadd('');
         }
     }
     
@@ -67,6 +82,8 @@ function Form() {
 
                     <button  className="bg-blue-600  text-white px-6 py-2 rounded-md hover:bg-blue-700 block mx-auto">Add Student</button>
 
+                    {error && <h1 className="text-red-500 text-xl text-center" >{error}</h1>}
+                    {add && <p className="text-green-500 text-lg text-center">{add}</p>}
                 </form>
             </div>
 
