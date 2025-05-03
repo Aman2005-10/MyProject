@@ -32,21 +32,17 @@ app.get("/", (req, res) => {
 
 // Add the Student
 
-app.post("/students", async (req, res) => {
-    const { name, email, phone, studentId } = req.body;
-
-    if (!name || !email || !phone || !studentId) {
-        return res.status(400).json({ error: "All fields are required" });
-    }
-
+app.post('/students', async (req, res) => {
     try {
-        const newStudent = new Student({ name, email, phone, studentId });
+        const newStudent = new Student(req.body);
         await newStudent.save();
         res.status(201).json({ message: "Student added successfully" });
-    } catch (error) {
-        res.status(500).json({ error: "Failed to add student" });
+    } catch (err) {
+        console.error(err);
+        res.status(400).json({ error: err.message });
     }
 });
+
 
 
 app.get("/students" , async (req, res) => {
