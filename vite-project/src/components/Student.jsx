@@ -1,75 +1,90 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 
-function Studentlist() {
-  const BaseUrl = "https://my-project-woad-chi.vercel.app/";
+function StudentList() {
+  const BASE_URL = "https://my-project-woad-chi.vercel.app/";
   const [students, setStudents] = useState([]);
 
-  const loadStudents = async () => {
-    try {
-      const res = await axios.get(`${BaseUrl}students`);
-      console.log("Fetched data:", res.data);
-
-      // Check if it's an object with students array inside
-      if (Array.isArray(res.data)) {
-        setStudents(res.data);
-      } else if (Array.isArray(res.data.students)) {
-        setStudents(res.data.students);
-      } else {
-        console.error("Unexpected response structure:", res.data);
-        setStudents([]);
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}students`);
+        const data = response.data;
+        if (Array.isArray(data)) {
+          setStudents(data);
+        } else if (Array.isArray(data.students)) {
+          setStudents(data.students);
+        } else {
+          setStudents([]);
+        }
+      } catch (err) {
+        console.error("Error fetching students:", err);
       }
+    };
 
+    fetchStudents();
+  }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this student?")) return;
+  
+    try {
+      await axios.delete(`${BASE_URL}students/${id}`);
+      setStudents((prev) => prev.filter((student) => student._id !== id));
     } catch (error) {
-      console.error("Error fetching students:", error);
+      console.error("Error deleting student:", error);
+      alert("Failed to delete student. Try again.");
     }
   };
 
-  useEffect(() => {
-    loadStudents();
-  }, []);
 
+  
   return (
-    <section className="container mx-auto mt-10 px-2">
-      <h1 className="text-2xl font-semibold mb-4 text-center">Student List</h1>
+    <div className="max-w-5xl mx-auto px-4 py-10">
+      <h1 className="text-3xl font-bold text-center mb-6 text-blue-600">📋 Student List</h1>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white rounded-lg shadow-md">
-          <thead>
-            <tr className="bg-gray-200 text-left">
-              <th className="py-3 px-6 whitespace-nowrap">Name</th>
-              <th className="py-3 px-6 whitespace-nowrap">Email</th>
-              <th className="py-3 px-6 whitespace-nowrap">Phone</th>
-              <th className="py-3 px-6 whitespace-nowrap">StudentId</th>
-              <th className="py-3 px-6 whitespace-nowrap">Actions</th>
+      <div className="overflow-x-auto bg-white rounded-xl shadow-lg">
+        <table className="min-w-full text-sm text-left">
+          <thead className="bg-blue-100 text-gray-700 font-semibold">
+            <tr>
+              <th className="px-6 py-3">Name</th>
+              <th className="px-6 py-3">Email</th>
+              <th className="px-6 py-3">Phone</th>
+              <th className="px-6 py-3">Student ID</th>
+              <th className="px-6 py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(students) && students.length > 0 ? (
+            {students.length > 0 ? (
               students.map((student, index) => (
-                <tr key={index} className="border-t border-gray-400">
-                  <td className="py-3 px-6">{student.name}</td>
-                  <td className="py-3 px-6">{student.email}</td>
-                  <td className="py-3 px-6">{student.phone}</td>
-                  <td className="py-3 px-6">{student.studentId}</td>
-                  <td className="py-2 px-6 space-x-2">
-                    <button className="bg-sky-600 text-white px-3 py-1 rounded hover:bg-sky-800">Edit</button>
-                    <button className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-800">Delete</button>
+                <tr key={index} className="border-t hover:bg-gray-50">
+                  <td className="px-6 py-4">{student.name}</td>
+                  <td className="px-6 py-4">{student.email}</td>
+                  <td className="px-6 py-4">{student.phone}</td>
+                  <td className="px-6 py-4">{student.studentId}</td>
+                  <td className="px-6 py-4 space-x-2">
+                    <button className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">Edit</button>
+                    <button
+  onClick={() => handleDelete(student._id)}
+  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+>
+  Delete
+</button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="text-center py-4 text-gray-500">
-                  No students found.
+                <td colSpan="5" className="text-center px-6 py-5 text-gray-500">
+                  No students found 😞
                 </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
-    </section>
+    </div>
   );
 }
 
-export default Studentlist;
+export default StudentList;

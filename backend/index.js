@@ -54,7 +54,18 @@ app.get("/students" , async (req, res) => {
     }
 })
 
-
+app.delete("/students/:id" , async (req, res) => {
+    try {
+        const deleteStudent = await Student.findByIdAndDelete(req.params.id);
+        if(!deleteStudent){
+            return res.status(404).send("Student Not Delete");
+        }
+        res.send("Student Delete Successfully");
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+})
 
 app.listen(port , () => {
     console.log( `Server Start on Port ${port}`);
