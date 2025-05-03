@@ -63,7 +63,8 @@ function StudentList() {
                   <td className="px-6 py-4">{student.phone}</td>
                   <td className="px-6 py-4">{student.studentId}</td>
                   <td className="px-6 py-4 space-x-2">
-                    <button className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">Edit</button>
+                    {/* set this edit feature tommorw */}
+                    {/* <button className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">Edit</button> */}
                     <button
   onClick={() => handleDelete(student._id)}
   className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
